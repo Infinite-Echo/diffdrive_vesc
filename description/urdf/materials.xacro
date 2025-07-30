@@ -1,0 +1,7 @@
+<?xml version="1.0" ?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="diffbot">
+  <material name="Steel">
+    <color rgba="0.627 0.627 0.627 1.000"/>
+  </material>
+  <xacro:property name="existing_contact_coefficients" value="[]"/>
+</robot>

@@ -34,8 +34,8 @@ def generate_launch_description():
     )
     declared_arguments.append(
         DeclareLaunchArgument(
-            "description_file",
-            default_value="diffbot.urdf.xacro",
+            "model",
+            default_value="diffbot.xacro",
             description="URDF/XACRO description file with the robot.",
         )
     )
@@ -59,24 +59,13 @@ def generate_launch_description():
 
     # Initialize Arguments
     description_package = LaunchConfiguration("description_package")
-    description_file = LaunchConfiguration("description_file")
+    description_file = LaunchConfiguration("model")
     gui = LaunchConfiguration("gui")
     prefix = LaunchConfiguration("prefix")
 
     # Get URDF via xacro
-    robot_description_content = Command(
-        [
-            PathJoinSubstitution([FindExecutable(name="xacro")]),
-            " ",
-            PathJoinSubstitution(
-                [FindPackageShare("diffdrive_vesc"), "urdf", description_file]
-            ),
-            " ",
-            "prefix:=",
-            prefix,
-        ]
-    )
-    robot_description = {"robot_description": robot_description_content}
+    robot_desc = Command(["xacro ", description_file])
+    robot_description = {"robot_description": robot_desc}
 
     rviz_config_file = PathJoinSubstitution(
         [FindPackageShare(description_package), "diffbot/rviz", "diffbot_view.rviz"]

@@ -1,0 +1,161 @@
+<?xml version="1.0" ?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="diffbot">
+  <xacro:property name="package_name" value="diffdrive_vesc"/>
+  <xacro:include filename="$(find ${package_name})/urdf/materials.xacro"/>
+  <xacro:include filename="$(find ${package_name})/ros2_control/diffbot.ros2_control.xacro" />
+
+  <xacro:arg name="use_mock_hardware" default="false" />
+
+  <link name="base_link">
+    <inertial>
+      <origin xyz="0.0000000000e+00 0.0000000000e+00 5.0000000000e-02" rpy="0.0 0.0 0.0"/>
+      <mass value="7.0650000000e+01"/>
+      <inertia ixx="5.8875000000e-01" iyy="5.8875000000e-01" izz="1.0597500000e+00" ixy="0.0000000000e+00" iyz="0.0000000000e+00" ixz="0.0000000000e+00"/>
+    </inertial>
+    <visual>
+      <origin xyz="0.0000000000e+00 0.0000000000e+00 0.0000000000e+00" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="file://$(find ${package_name})/meshes/base.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="Steel"/>
+    </visual>
+    <collision>
+      <origin xyz="0.0000000000e+00 0.0000000000e+00 0.0000000000e+00" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="file://$(find ${package_name})/meshes/base_collision.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <link name="front_left_wheel_link">
+    <inertial>
+      <origin xyz="-1.5000000000e-02 0.0000000000e+00 6.9388939039e-18" rpy="0.0 0.0 0.0"/>
+      <mass value="1.8496126748e+00"/>
+      <inertia ixx="2.3120158435e-03" iyy="1.2947288724e-03" izz="1.2947288724e-03" ixy="-3.4694469520e-18" iyz="2.1684043450e-18" ixz="-8.6736173799e-19"/>
+    </inertial>
+    <visual>
+      <origin xyz="-1.8000000000e-01 7.5000000000e-02 -2.5000000000e-02" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="file://$(find ${package_name})/meshes/front_left_wheel.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="Steel"/>
+    </visual>
+    <collision>
+      <origin xyz="-1.8000000000e-01 7.5000000000e-02 -2.5000000000e-02" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="file://$(find ${package_name})/meshes/front_left_wheel_collision.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <xacro:if value="${'Steel' in existing_contact_coefficients}">
+        <xacro:insert_block name="Steel_contact_coefficients"/>
+      </xacro:if>
+
+    </collision>
+  </link>
+
+  <joint name="front_left_wheel_joint" type="continuous">
+    <origin xyz="1.8000000000e-01 -7.5000000000e-02 2.5000000000e-02" rpy="0.0 0.0 0.0"/>
+    <parent link="base_link"/>
+    <child link="front_left_wheel_link"/>
+    <axis xyz="1.0 0.0 0.0"/>
+  </joint>
+
+  <link name="back_left_wheel_link">
+    <inertial>
+      <origin xyz="-1.5000000000e-02 0.0000000000e+00 6.9388939039e-18" rpy="0.0 0.0 0.0"/>
+      <mass value="1.8496126748e+00"/>
+      <inertia ixx="2.3120158435e-03" iyy="1.2947288724e-03" izz="1.2947288724e-03" ixy="-3.4694469520e-18" iyz="2.1684043450e-18" ixz="-8.6736173799e-19"/>
+    </inertial>
+    <visual>
+      <origin xyz="-1.8000000000e-01 7.5000000000e-02 -2.5000000000e-02" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="file://$(find ${package_name})/meshes/back_left_wheel.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="Steel"/>
+    </visual>
+    <collision>
+      <origin xyz="-1.8000000000e-01 7.5000000000e-02 -2.5000000000e-02" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="file://$(find ${package_name})/meshes/back_left_wheel_collision.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <xacro:if value="${'Steel' in existing_contact_coefficients}">
+        <xacro:insert_block name="Steel_contact_coefficients"/>
+      </xacro:if>
+
+    </collision>
+  </link>
+
+  <joint name="back_left_wheel_joint" type="continuous">
+    <origin xyz="1.8000000000e-01 7.5000000000e-02 2.5000000000e-02" rpy="0.0 0.0 0.0"/>
+    <parent link="base_link"/>
+    <child link="back_left_wheel_link"/>
+    <axis xyz="1.0 0.0 0.0"/>
+  </joint>
+
+  <link name="front_right_wheel_link">
+    <inertial>
+      <origin xyz="1.5000000000e-02 0.0000000000e+00 6.9388939039e-18" rpy="0.0 0.0 0.0"/>
+      <mass value="1.8496126748e+00"/>
+      <inertia ixx="2.3120158435e-03" iyy="1.2947288724e-03" izz="1.2947288724e-03" ixy="-3.4694469520e-18" iyz="2.1684043450e-18" ixz="-8.6736173799e-19"/>
+    </inertial>
+    <visual>
+      <origin xyz="-1.5000000000e-01 7.5000000000e-02 -2.5000000000e-02" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="file://$(find ${package_name})/meshes/front_right_wheel.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="Steel"/>
+    </visual>
+    <collision>
+      <origin xyz="-1.5000000000e-01 7.5000000000e-02 -2.5000000000e-02" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="file://$(find ${package_name})/meshes/front_right_wheel_collision.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <xacro:if value="${'Steel' in existing_contact_coefficients}">
+        <xacro:insert_block name="Steel_contact_coefficients"/>
+      </xacro:if>
+
+    </collision>
+  </link>
+
+  <joint name="front_right_wheel_joint" type="continuous">
+    <origin xyz="-1.8000000000e-01 -7.5000000000e-02 2.5000000000e-02" rpy="0.0 0.0 0.0"/>
+    <parent link="base_link"/>
+    <child link="front_right_wheel_link"/>
+    <axis xyz="1.0 0.0 0.0"/>
+  </joint>
+
+  <link name="back_right_wheel_link">
+    <inertial>
+      <origin xyz="1.5000000000e-02 0.0000000000e+00 6.9388939039e-18" rpy="0.0 0.0 0.0"/>
+      <mass value="1.8496126748e+00"/>
+      <inertia ixx="2.3120158435e-03" iyy="1.2947288724e-03" izz="1.2947288724e-03" ixy="-3.4694469520e-18" iyz="2.1684043450e-18" ixz="-8.6736173799e-19"/>
+    </inertial>
+    <visual>
+      <origin xyz="-1.5000000000e-01 7.5000000000e-02 -2.5000000000e-02" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="file://$(find ${package_name})/meshes/back_right_wheel.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="Steel"/>
+    </visual>
+    <collision>
+      <origin xyz="-1.5000000000e-01 7.5000000000e-02 -2.5000000000e-02" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="file://$(find ${package_name})/meshes/back_right_wheel_collision.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <xacro:if value="${'Steel' in existing_contact_coefficients}">
+        <xacro:insert_block name="Steel_contact_coefficients"/>
+      </xacro:if>
+
+    </collision>
+  </link>
+
+  <joint name="back_right_wheel_joint" type="continuous">
+    <origin xyz="-1.8000000000e-01 7.5000000000e-02 2.5000000000e-02" rpy="0.0 0.0 0.0"/>
+    <parent link="base_link"/>
+    <child link="back_right_wheel_link"/>
+    <axis xyz="1.0 0.0 0.0"/>
+  </joint>
+
+  <xacro:diffbot_ros2_control
+    name="DiffBot" use_mock_hardware="$(arg use_mock_hardware)"/>
+
+</robot>
