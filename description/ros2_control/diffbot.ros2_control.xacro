@@ -11,8 +11,8 @@
           <param name="front_right_vesc_id">1</param>
           <param name="back_left_vesc_id">2</param>
           <param name="back_right_vesc_id">3</param>
-          <param name="gear_ratio">1.0</param>
-          <param name="device">vcan0</param>
+          <param name="gear_ratio">96.0</param>
+          <param name="device">can0</param>
         </hardware>
       </xacro:unless>
       <xacro:if value="${use_mock_hardware}">
