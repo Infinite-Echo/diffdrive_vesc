@@ -5,36 +5,40 @@ You can try to look through https://github.com/vedderb/bldc/tree/master source c
 to understand it better but probably not necessary or worth the effort
 */
 
-VESC::VESC(uint32_t can_id, double gear_ratio)
+VESC::VESC(uint32_t can_id, double gear_ratio, double pole_pairs)
 {
   logger_ = std::make_shared<rclcpp::Logger>(
     rclcpp::get_logger("controller_manager.resource_manager.hardware_component.system.DiffBot"));
-  setup(can_id, gear_ratio);
+  setup(can_id, gear_ratio, pole_pairs);
 }
 
-void VESC::setup(uint32_t can_id, double gear_ratio)
+void VESC::setup(uint32_t can_id, double gear_ratio, double pole_pairs)
 {
   can_id_ = can_id;
   gear_ratio_ = gear_ratio;
+  pole_pairs_ = pole_pairs;
 }
 
-int32_t VESC::vel_to_rpm(double vel)
+double VESC::vel_to_rpm(double vel)
 {
   // rads/s to rpm
-  return static_cast<int32_t>((vel * SECONDS_PER_MINUTE) / FULL_ROTATION_RADS);
+  return static_cast<double>((vel * SECONDS_PER_MINUTE) / FULL_ROTATION_RADS);
 }
 
-double VESC::rpm_to_vel(int32_t rpm)
+double VESC::rpm_to_vel(double rpm)
 {
   return static_cast<double>((rpm * FULL_ROTATION_RADS) / SECONDS_PER_MINUTE);
 }
 
-can_frame VESC::create_rpm_cmd(int32_t rpm)
+can_frame VESC::create_rpm_cmd(double rpm)
 {
   can_frame rpm_msg{};
   rpm_msg.can_id = can_id_ | RPM_CMD_ID | CAN_EFF_FLAG;
   rpm_msg.can_dlc = 4;
-  int32_t erpm = rpm_to_vel(rpm) * gear_ratio_ * 2; //the 2 has something to do with motor poles/erpm
+  
+  RCLCPP_DEBUG(rclcpp::get_logger("diffdrive_vesc"), "rpm: '%f'", rpm);
+  int32_t erpm = static_cast<int32_t>(std::llround(rpm * gear_ratio_ * pole_pairs_));
+  RCLCPP_DEBUG(rclcpp::get_logger("diffdrive_vesc"), "erpm: '%d'", erpm);
 
   // data is big-endian (https://github.com/vedderb/bldc/blob/master/documentation/comm_can.md)
   rpm_msg.data[0] = static_cast<uint8_t>((erpm >> 24) & 0xFF);
@@ -46,20 +50,20 @@ can_frame VESC::create_rpm_cmd(int32_t rpm)
 
 void VESC::handle_rpm_feedback_msg(const can_frame& frame)
 {
-  RCLCPP_INFO(rclcpp::get_logger("test"), "dlc: '%d'", static_cast<int>(frame.can_dlc));
+  RCLCPP_DEBUG(rclcpp::get_logger("diffdrive_vesc"), "dlc: '%d'", static_cast<int>(frame.can_dlc));
   if(static_cast<int>(frame.can_dlc) < 4)
   {
-    RCLCPP_INFO(rclcpp::get_logger("test"), "Leaving callback");
+    RCLCPP_DEBUG(rclcpp::get_logger("diffdrive_vesc"), "Leaving callback");
     return;
   }
-  RCLCPP_INFO(rclcpp::get_logger("test"), "Inside callback");
+  RCLCPP_DEBUG(rclcpp::get_logger("diffdrive_vesc"), "Inside callback");
 
   int32_t ERPM = (static_cast<int32_t>(frame.data[0]) << 24) |
                 (static_cast<int32_t>(frame.data[1]) << 16) |
                 (static_cast<int32_t>(frame.data[2]) << 8) |
                 static_cast<int32_t>(frame.data[3]);
-  RCLCPP_INFO(rclcpp::get_logger("test"), "erpm: '%d'", ERPM);
-  int32_t RPM = ERPM / (gear_ratio_ * 2); 
+  RCLCPP_DEBUG(rclcpp::get_logger("diffdrive_vesc"), "erpm feedback: '%d'", ERPM);
+  int32_t RPM = ERPM / (gear_ratio_ * pole_pairs_); 
   /* the (2 * gear_ratio_) has something to do with motor poles/erpm 
   (you'd have to dig into https://github.com/vedderb/bldc/tree/master to understand it) */
   vel = rpm_to_vel(RPM);

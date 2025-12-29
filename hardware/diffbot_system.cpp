@@ -44,12 +44,13 @@ hardware_interface::CallbackReturn DiffDriveVescHardware::on_init(
   cfg_.back_left_vesc_id = std::stoi(info_.hardware_parameters["back_left_vesc_id"]);
   cfg_.back_right_vesc_id = std::stoi(info_.hardware_parameters["back_right_vesc_id"]);
   cfg_.gear_ratio = hardware_interface::stod(info_.hardware_parameters["gear_ratio"]);
+  cfg_.pole_pairs = hardware_interface::stod(info_.hardware_parameters["pole_pairs"]);
   cfg_.device = info_.hardware_parameters["device"];
 
-  front_left_vesc_.setup(cfg_.front_left_vesc_id, cfg_.gear_ratio);
-  front_right_vesc_.setup(cfg_.front_right_vesc_id, cfg_.gear_ratio);
-  back_left_vesc_.setup(cfg_.back_left_vesc_id, cfg_.gear_ratio);
-  back_right_vesc_.setup(cfg_.back_right_vesc_id, cfg_.gear_ratio);
+  front_left_vesc_.setup(cfg_.front_left_vesc_id, cfg_.gear_ratio, cfg_.pole_pairs);
+  front_right_vesc_.setup(cfg_.front_right_vesc_id, cfg_.gear_ratio, cfg_.pole_pairs);
+  back_left_vesc_.setup(cfg_.back_left_vesc_id, cfg_.gear_ratio, cfg_.pole_pairs);
+  back_right_vesc_.setup(cfg_.back_right_vesc_id, cfg_.gear_ratio, cfg_.pole_pairs);
 
   logger_ = std::make_shared<rclcpp::Logger>(
     rclcpp::get_logger("controller_manager.resource_manager.hardware_component.system.DiffBot"));
@@ -225,9 +226,9 @@ hardware_interface::return_type diffdrive_vesc ::DiffDriveVescHardware::write(
   const rclcpp::Time & /*time*/, const rclcpp::Duration & /*period*/)
 {
   can_.send(front_left_vesc_.create_rpm_cmd(front_left_vesc_.vel_to_rpm(front_left_vesc_.cmd)));
-  can_.send(front_right_vesc_.create_rpm_cmd(front_right_vesc_.vel_to_rpm(front_right_vesc_.cmd)));
+  can_.send(front_right_vesc_.create_rpm_cmd(-1.0*front_right_vesc_.vel_to_rpm(front_right_vesc_.cmd)));
   can_.send(back_left_vesc_.create_rpm_cmd(back_left_vesc_.vel_to_rpm(back_left_vesc_.cmd)));
-  can_.send(back_right_vesc_.create_rpm_cmd(back_right_vesc_.vel_to_rpm(back_right_vesc_.cmd)));
+  can_.send(back_right_vesc_.create_rpm_cmd(-1.0*back_right_vesc_.vel_to_rpm(back_right_vesc_.cmd)));
   return hardware_interface::return_type::OK;
 }
 

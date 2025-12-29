@@ -42,11 +42,12 @@ class DiffDriveVescHardware : public hardware_interface::SystemInterface
 
 struct Config
 {
-  uint32_t front_left_vesc_id = 0;
-  uint32_t front_right_vesc_id = 1;
-  uint32_t back_left_vesc_id = 2;
-  uint32_t back_right_vesc_id = 3;
-  double gear_ratio = 0.0;
+  uint32_t front_left_vesc_id = 1;
+  uint32_t front_right_vesc_id = 2;
+  uint32_t back_left_vesc_id = 3;
+  uint32_t back_right_vesc_id = 4;
+  double gear_ratio = 1.0;
+  double pole_pairs = 2.0;
   std::string device = "";
 };
 

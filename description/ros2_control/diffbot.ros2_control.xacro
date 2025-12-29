@@ -7,11 +7,12 @@
       <xacro:unless value="${use_mock_hardware}">
         <hardware>
           <plugin>diffdrive_vesc/DiffDriveVescHardware</plugin>
-          <param name="front_left_vesc_id">0</param>
+          <param name="front_left_vesc_id">2</param>
           <param name="front_right_vesc_id">1</param>
-          <param name="back_left_vesc_id">2</param>
+          <param name="back_left_vesc_id">4</param>
           <param name="back_right_vesc_id">3</param>
-          <param name="gear_ratio">96.0</param>
+          <param name="gear_ratio">96.33</param>
+          <param name="pole_pairs">2.0</param>
           <param name="device">can0</param>
         </hardware>
       </xacro:unless>
